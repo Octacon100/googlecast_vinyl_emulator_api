@@ -240,8 +240,16 @@ class CastPlayer:
             if self.client is None or self.spotify_device_id is None:
                 _statusMessage = _statusMessage + "Connecting to Spotify.\n"
                 self.connect_spotify()
-            self.client.start_playback(device_id=self.spotify_device_id, context_uri=song_url)
-            _statusMessage = _statusMessage + "Playback of " + song_url + " on " + self.cast_item_name + " will be starting shortly.\n"
+            if self.spotify_device_id is not None:
+                if ":track:" in song_url:
+                    #Song is a track, play it through the track process
+                    string_array = [song_url]
+                    self.client.start_playback(device_id=self.spotify_device_id, uris=string_array)
+                else:    
+                    self.client.start_playback(device_id=self.spotify_device_id, context_uri=song_url)
+                _statusMessage = _statusMessage + "Playback of " + song_url + " on " + self.cast_item_name + " will be starting shortly.\n"
+            else:
+                _statusMessage = _statusMessage + "Could not find the spotify device, cannot play music."
         else:
             _statusMessage = _statusMessage + "Could not find the chromecast, cannot play music."
             print (_statusMessage)
