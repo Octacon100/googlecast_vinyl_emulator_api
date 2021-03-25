@@ -72,11 +72,15 @@ class CastPlayer:
         devices_available = self.client.devices()
 
         # Match active spotify devices with the spotify controller's device id
-        for device in devices_available["devices"]:
-            if device["id"] == self.sp.device:
-                self.spotify_device_id = device["id"]
-                print("Spotify found the device.")
-                break
+        # for device in devices_available["devices"]:
+        #     if device["id"] == self.sp.device:
+        #         self.spotify_device_id = device["id"]
+        #         print("Spotify found the device.")
+        #         break
+
+        #Currently brute forcing it due to google home's not appearing on spotify devices. Still seem to work for now.
+        self.spotify_device_id = self.sp.device
+        print (self.sp.device)
 
         #Error if device could not be found.
         if not self.spotify_device_id:
@@ -233,6 +237,7 @@ class CastPlayer:
         """
         _status = "OK"
         _statusMessage = ""
+        print("Song is " + song_url)
         if self.cast_item is None:
             _statusMessage = "Looking for " + self.cast_item_name + ".\n"
             self.get_cast_item()
@@ -241,12 +246,15 @@ class CastPlayer:
                 _statusMessage = _statusMessage + "Connecting to Spotify.\n"
                 self.connect_spotify()
             if self.spotify_device_id is not None:
+                print ("Spotify Device = " + self.spotify_device_id)
                 if ":track:" in song_url:
                     #Song is a track, play it through the track process
                     string_array = [song_url]
-                    self.client.start_playback(device_id=self.spotify_device_id, uris=string_array)
+                    print ("Playing Track = " + song_url)
+                    self.client.start_playback(device_id=str(self.spotify_device_id), uris=string_array)
                 else:    
-                    self.client.start_playback(device_id=self.spotify_device_id, context_uri=song_url)
+                    print ("Playing Album or Playlist = " + song_url)
+                    self.client.start_playback(device_id=str(self.spotify_device_id), context_uri=song_url)
                 _statusMessage = _statusMessage + "Playback of " + song_url + " on " + self.cast_item_name + " will be starting shortly.\n"
             else:
                 _statusMessage = _statusMessage + "Could not find the spotify device, cannot play music."
