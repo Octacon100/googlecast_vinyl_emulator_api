@@ -111,25 +111,23 @@ class CastPlayer:
     #    mc = self.cast_item.media_controller
 
     #This looks exactly the same as getting the cast item. Not sure if anything else needs to happen.
-    def change_speaker(self, cast_item_name):
-        """Will move to the next song in a playlist or album. Not complete yet.
-        """
-        #TODO: Do this.
-        _status = "OK"
-        _statusMessage = ""
-        self.cast_item = self.getCastItem(cast_item_name)
+    # def change_speaker(self, cast_item_name):
+    #     """Will move to the next song in a playlist or album. Not complete yet.
+    #     """
+    #     #TODO: Do this.
+    #     _status = "OK"
+    #     _statusMessage = ""
+    #     self.cast_item = self.getCastItem(cast_item_name)
         
-        #TODO: Handle this using some of the code in Connect_spotify.
+    #     #TODO: Handle this using some of the code in Connect_spotify.
 
-        self.client.transfer_playback(self.new_device_id)
-        results = {
-            "Status":_status,
-            "StatusMessage":_statusMessage
-        }
-        print (_statusMessage)
-        return json.dumps(results) 
-
-        return
+    #     self.client.transfer_playback(self.new_device_id)
+    #     results = {
+    #         "Status":_status,
+    #         "StatusMessage":_statusMessage
+    #     }
+    #     print (_statusMessage)
+    #     return json.dumps(results) 
 
     def next(self):
         """Will move to the next song in a playlist or album.
@@ -176,19 +174,19 @@ class CastPlayer:
         print (_statusMessage)
         return json.dumps(results) 
 
-    def volume(self, volume_percent):
-        """Will set volume on Spotify to the amount in 'volume_percent'. Not complete yet
-        """
-        #TODO: Do this. Need to get volume amount from the website.
-        _status = "OK"
-        _statusMessage = ""
-        self.client.volume(volume_percent, self.spotify_device_id)
-        results = {
-            "Status":_status,
-            "StatusMessage":_statusMessage
-        }
-        print (_statusMessage)
-        return json.dumps(results) 
+    # def volume(self, volume_percent):
+    #     """Will set volume on Spotify to the amount in 'volume_percent'. Not complete yet
+    #     """
+    #     #TODO: Do this. Need to get volume amount from the website.
+    #     _status = "OK"
+    #     _statusMessage = ""
+    #     self.client.volume(volume_percent, self.spotify_device_id)
+    #     results = {
+    #         "Status":_status,
+    #         "StatusMessage":_statusMessage
+    #     }
+    #     print (_statusMessage)
+    #     return json.dumps(results) 
 
     def shuffle(self):
         """Will set shuffle on and off, based on the current state. Then passes
@@ -221,8 +219,11 @@ class CastPlayer:
         #TODO: Do this. Need to get volume type from the website.
         _status = "OK"
         _statusMessage = ""
-        self.client.repeat(repeat_state, self.spotify_device_id)
-        _statusMessage = "Repeat has been set to  " + repeat_state
+        if repeat_state in ("track", "context", "off"):
+            self.client.repeat(repeat_state, self.spotify_device_id)
+            _statusMessage = "Repeat has been set to  " + repeat_state + "."
+        else:
+            _statusMessage = "Repeat cannot be set to a state of " + repeat_state + "."
         results = {
             "Status":_status,
             "StatusMessage":_statusMessage
@@ -238,13 +239,14 @@ class CastPlayer:
         _status = "OK"
         _statusMessage = ""
         print("Song is " + song_url)
-        if self.cast_item is None:
-            _statusMessage = "Looking for " + self.cast_item_name + ".\n"
-            self.get_cast_item()
+        
+        _statusMessage = "Looking for " + self.cast_item_name + ".\n"
+        self.cast_item = None
+        self.get_cast_item()
         if self.cast_item is not None: #If the cast worked, then put music on.
-            if self.client is None or self.spotify_device_id is None:
-                _statusMessage = _statusMessage + "Connecting to Spotify.\n"
-                self.connect_spotify()
+            self.spotify_device_id = None
+            _statusMessage = _statusMessage + "Connecting to Spotify.\n"
+            self.connect_spotify()
             if self.spotify_device_id is not None:
                 print ("Spotify Device = " + self.spotify_device_id)
                 if ":track:" in song_url:

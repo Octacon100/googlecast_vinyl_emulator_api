@@ -54,13 +54,15 @@ def shuffle():
     global cast_player
     return cast_player.shuffle()    
 
+# @app.route("/repeat/<repeat_state>", methods=["GET"])
+# def repeat(repeat_state=""):
+#     global cast_player
+#     return cast_player.repeat(repeat_state)    
+
 #Need to figure out the following end points:
-    #   command:playpause
-    #   command:mute
-    #   command:next
     #   command:volume/50
     #   command:volume/+10
-#      command:shuffle/on
+    #   command:changespeaker/First+Floor.
 #Can remove the command: from the command
 
 
